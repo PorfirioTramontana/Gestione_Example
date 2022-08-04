@@ -1,0 +1,150 @@
+
+Log_in= SELECT * FROM clienti WHERE username ='"+username+ "' AND password ='"+password+"'
+Lista_pacchetti= SELECT * FROM PACCHETTOTURISTICO ,CITTA WHERE (PACCHETTOTURISTICO.IDCITTA=CITTA.IDCITTA)
+Lista_ServiziHotel= SELECT DISTINCT SERVIZIOHOTEL . IDSERVIZIO ,SERVIZIOHOTEL .NOMHOTEL, SERVIZIOHOTEL .CATEGORIA, SERVIZIOHOTEL .DESCRIZIONEHOTEL,SERVIZIOHOTEL . PREZZO  FROM SERVIZIOHOTEL ,OPERATOREREGISTRATO,PACCHETTOTURISTICO   where ( PACCHETTOTURISTICO . IDCITTA=OPERATOREREGISTRATO.IDCITTA AND OPERATOREREGISTRATO .RUOLO ='Hotel'   AND OPERATOREREGISTRATO .IDOPERATORE =SERVIZIOHOTEL .IDOPERATORE ) GROUP BY SERVIZIOHOTEL.IDSERVIZIO;
+Lista_serviziRistorazione=  SELECT SERVIZIORISTORAZIONE.IDSERVIZIO,SERVIZIORISTORAZIONE .TIPOLOGIAPASTO ,SERVIZIORISTORAZIONE .MENU ,SERVIZIORISTORAZIONE .DESCRIZIONEMENU,SERVIZIORISTORAZIONE.PREZZO"
+				+ " FROM SERVIZIORISTORAZIONE,OPERATOREREGISTRATO  WHERE (OPERATOREREGISTRATO .IDCITTA ='"+idCity+"' AND "
+				+ "OPERATOREREGISTRATO .IDOPERATORE =SERVIZIORISTORAZIONE .IDOPERATORE 
+Lista_musei= SELECT VISITAMUSEALE .IDSERVIZIO ,VISITAMUSEALE .PREZZO ,VISITAMUSEALE .NOMEMUSEO ,VISITAMUSEALE .DURATA"
+					+ " FROM VISITAMUSEALE ,OPERATOREREGISTRATO,PACCHETTOTURISTICO "
+					+ " WHERE (OPERATOREREGISTRATO .IDCITTA ='"+idCity+"'"
+					+ " AND OPERATOREREGISTRATO .IDOPERATORE =VISITAMUSEALE .IDOPERATORE )"
+					+ "GROUP BY VISITAMUSEALE .IDSERVIZIO
+					
+					
+
+CREATE TABLE Citta (
+    idCitta int ,
+    nomeCitta varchar(255)  ,
+    regione varchar(255),
+   paese varchar(255),
+ PRIMARY KEY (idCitta)
+    
+);
+
+INSERT INTO Citta (idCitta, nomeCitta , regione,paese) VALUES (1, 'Napoli', 'Campania','Italia'),  (2, 'Milano', 'Lombardia','Italia'),(3, 'Firenze', 'Toscana','Italia');
+
+CREATE TABLE PacchettoTuristico (
+    codice varchar(255) ,
+    descrizione varchar(255) ,
+    numMaxPartecipanti int,
+   prezzo float,
+  idCitta int,
+    PRIMARY KEY (codice),
+    FOREIGN KEY (idCitta) REFERENCES Citta(idCitta)
+);
+
+INSERT INTO PacchettoTuristico (codice, descrizione , numMaxPartecipanti,prezzo,idCitta) VALUES ('p1', 'pacchetto1', 100,50,2),  ('p2', 'pacchetto2', 200,80,3),('p3', 'pacchetto3', 200,80,3)
+
+
+CREATE TABLE OperatoreRegistrato (
+    idOperatore varchar(255) ,
+    nomeSocieta varchar(255)  ,
+    partitaIva varchar(255),
+   username varchar(255),
+   password varchar(255),
+   ruolo varchar(255),
+   idCitta varchar(255),
+PRIMARY KEY (idOperatore),
+FOREIGN KEY (idCitta) REFERENCES Citta(idCitta)
+    
+);
+
+INSERT INTO OPERATOREREGISTRATO  (IDOPERATORE , NOMESOCIETA  , PARTITAIVA ,USERNAME ,PASSWORD ,RUOLO ,IDCITTA ) VALUES ('op1', 'scocieta1', '11111111111','operatore1','operatore1','Hotel',1), 
+('op2', 'scocieta2', '22222222222','operatore2','operatore2','Trasportatore',1), 
+('op3', 'scocieta3', '33333333333','operatore3','operatore3','Ristorazione',1), 
+('op4', 'scocieta4', '44444444444','operatore4','operatore4','GuidaTuristica',1),  
+('op5', 'scocieta5', '55555555555','operatore5','operatore5','GuidaTuristica',2),
+ ('op6', 'scocieta6', '66666666666','operatore6','operatore6','Ristorazione',2),
+('op7', 'scocieta7', '77777777777','operatore7','operatore7','Trasportatore',2),
+('op8', 'scocieta8', '88888888888','operatore8','operatore8','Hotel',2),
+('op9', 'scocieta9', '99999999999','operatore9','operatore9','Trasportatore',2),('op10', 'scocieta10', '00000000001','operatore10','operatore10','Hotel',3), 
+('op12', 'scocieta12', '00000000002','operatore12','operatore12','Trasportatore',3), 
+('op13', 'scocieta13', '00000000003','operatore13','operatore13','Ristorazione',3), 
+('op14', 'scocieta14', '00000000004','operatore14','operatore14','GuidaTuristica',3)
+
+
+CREATE TABLE ServizioHotel (
+    idServizio varchar(255) ,
+    prezzo varchar(255)  ,
+    nomHotel varchar(255),
+   categoria varchar(255),
+   descrizioneHotel varchar(255),
+PRIMARY KEY (idServizio),
+FOREIGN KEY (idOperatore) REFERENCES OperatoreRegistrato(idOperatore)
+);
+
+INSERT INTO SERVIZIOHOTEL  (IDSERVIZIO , PREZZO  , NOMHOTEL ,CATEGORIA,DESCRIZIONEHOTEL ,IDOPERATORE  )
+ VALUES ('S1', 10, 'Hotel1','5star','Descrizione1','op1'), ('S2', 10, 'Hotel2','5star','Descrizione2','op8'),('S5', 15, 'Hotel5','5star','Descrizione5','op10'), 
+  ('S6', 25, 'Hotel6','5star','Descrizione6','op10')
+
+
+CREATE TABLE ServizioRistorazione(
+    idServizio varchar(255) ,
+    prezzo varchar(255)  ,
+    tipologiaPasto varchar(255),
+   menu varchar(255),
+   descrizioneMenu varchar(255),
+  idOperatore varchar(255),
+PRIMARY KEY (idServizio),
+FOREIGN KEY (idOperatore) REFERENCES OperatoreRegistrato(idOperatore)
+);
+
+
+INSERT INTO SERVIZIORISTORAZIONE   (IDSERVIZIO , PREZZO  , TIPOLOGIAPASTO  ,MENU ,DESCRIZIONEMENU  ,IDOPERATORE  )
+ VALUES ('r1', 20, 'Colazione','Menu1','DescrizioneMenu1','op3'), ('r2', 20, 'Pranzo','Menu2','DescrizioneMenu2','op3'),  ('r3', 20, 'Cena','Menu3','DescrizioneMenu1','op3'), ('r4', 20, 'Antipasto','Menu4','DescrizioneMenu4','op3'), 
+ ('r5', 30, 'Colazione','Menu5','DescrizioneMenu5','op6'), ('r6', 30, 'Pranzo','Menu6','DescrizioneMenu6','op6'),
+  ('r7', 30, 'Cena','Menu7','DescrizioneMenu7','op6'), 
+('r8', 30, 'Antipasto','Menu8','DescrizioneMenu8','op6'), 
+('r9', 20, 'Colazione','Menu9','DescrizioneMenu9','op9'), ('r10', 20, 'Pranzo','Menu10','DescrizioneMenu10','op9'),  ('r11', 20, 'Cena','Menu11','DescrizioneMenu11','op9'), 
+('r12', 20, 'Antipasto','Menu12','DescrizioneMenu12','op9'), ('r13', 25, 'Colazione','Menu13','DescrizioneMenu13','op3'), ('r14', 25, 'Pranzo','Menu14','DescrizioneMenu14','op3'),  ('r15', 25, 'Cena','Menu15','DescrizioneMenu15','op3'), ('r16', 25, 'Antipasto','Menu16','DescrizioneMenu16','op3'), 
+ ('r17', 30, 'Colazione','Menu17','DescrizioneMenu17','op6'), ('r18', 30, 'Pranzo','Menu18','DescrizioneMenu18','op6'),
+  ('r22', 30, 'Cena','Menu22','DescrizioneMenu22','op6'), 
+('r19', 30, 'Antipasto','Menu19','DescrizioneMenu19','op6'), 
+('r20', 20, 'Colazione','Menu20','DescrizioneMenu20','op13'), ('r23', 20, 'Pranzo','Menu23','DescrizioneMenu23','op13'),  ('r24', 20, 'Cena','Menu24','DescrizioneMenu24','op13'), 
+('r21', 20, 'Antipasto','Menu21','DescrizioneMenu21','op13')
+
+
+
+
+CREATE TABLE VisitaMuseale(
+    idServizio varchar(255) ,
+    prezzo varchar(255)  ,
+    nomeMuseo varchar(255),
+   durata varchar(255),
+  idOperatore varchar(255),
+PRIMARY KEY (idServizio),
+FOREIGN KEY (idOperatore) REFERENCES OperatoreRegistrato(idOperatore)
+);
+
+INSERT INTO VISITAMUSEALE   (IDSERVIZIO , PREZZO  , NOMEMUSEO   ,DURATA    ,IDOPERATORE  )
+ VALUES ('m1', 20, 'Museo1','2 ore','op4'), ('m2', 30, 'Museo1','3 ore','op5'),  ('m3', 40, 'Museo1','4 ore','op4'), ('m4', 10, 'Museo1','1 ora','op5'), 
+ ('m5', 25, 'Museo1','2 ore e 30 minuti','op4'), ('m6', 15, 'Museo1','1 ora e 30 minuti','op5'),
+  ('m7', 10, 'Museo1','1 ora','op4'), 
+('m8', 20, 'Museo1','2 ore','op5'), 
+('m9', 20, 'Museo1','2 ore','op4'), ('m10', 10, 'Museo1','1 ora','op5'),  ('r11', 10, 'Museo1','1 ora','op4'), 
+('m12', 20, 'Museo1','2 ore','op5'),('m13', 15, 'Museo13','2 ore','op14'), ('m14', 10, 'Museo14','1 ore','op14'),  ('m15', 20, 'Museo15','1 ora','op14'), ('m16', 10, 'Museo16','1 ora','op14'), 
+ ('m17', 25, 'Museo17','2 ore ','op14'), ('m18', 15, 'Museo18','1 ora','op14')
+
+
+
+CREATE TABLE Carrello(
+data VARCHAR(255),
+descrizionePacchetto varchar(255),
+ numMaxPartecipanti int,
+citta varchar(255),
+paese varchar(255),
+nomeHotel varchar(255),
+categoriaHotel varchar(255),
+descrizioneHotel varchar(255),
+PrezzoHotel float,
+servizioRistorazione varchar(255),
+prezzoRistorazione float, 
+visitaMuseale varchar(255),
+);
+
+Salva_carrello= INSERT INTO Carrello(data,descrizionePacchetto , numMaxPartecipanti,citta,paese,nomeHotel,"
+		 		+ "categoriaHotel,descrizioneHotel,PrezzoHotel,servizioRistorazione,prezzoRistorazione,visitaMuseale)"
+		 		+ "VALUES('"+data+"','"+descrizioneP+"',"+numPersone+",'"+citta+"','"+paese+"','"+nomeHotel+"',"
+		 				+ "'"+categoriaHotel+"','"+descrizioneHotel+"',"+prezzoHotel+",'"+pasto+"',"
+		 						+ ""+prezzoRistorazione+",'"+museo+"')
