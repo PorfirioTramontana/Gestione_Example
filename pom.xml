@@ -10,7 +10,7 @@
   <name>Gestione</name>
     
   
-    <dependencies>
+    <dependencies> 
     
     <!-- https://mvnrepository.com/artifact/org.testng/testng -->
 <dependency>
